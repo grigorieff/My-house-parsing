@@ -99,3 +99,15 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+*.idea
+
+*.pyc
+
+*.DS_Store
+
+try.py
+
+*.csv
+
+*.cfg
