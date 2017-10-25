@@ -12,6 +12,7 @@ class Parser:
     def __init__(self, url):
         self.url = url
         self.check_url()
+        self.big_table = self.get_table()
 
     def check_url(self):
         """
@@ -29,8 +30,11 @@ class Parser:
         get the soup variable for parsing the passport of a certain house.
         """
         page = get(self.url)
-        soup = BeautifulSoup(page.text, 'lxml')
-        return soup
+        if page.status_code == 200:
+            soup = BeautifulSoup(page.text, 'lxml')
+            return soup
+        else:
+            raise ConnectionError('The page is not disponible.')
 
     def get_table(self):
         """
@@ -48,7 +52,7 @@ class Parser:
         """
         all_list = []
 
-        for element in self.get_table()[:3]:
+        for element in self.big_table[:3]:
             for all_element in element.select('.col_list > tbody > tr > td > span'):
                 all_list.append(all_element.text)
 
@@ -60,12 +64,15 @@ class Parser:
         """
         lift_rows = []
 
-        for element in self.get_table()[3].find_all('tr'):  # parse the 4-th table
+        for element in self.big_table[3].find_all('tr'):  # parse the 4-th table
             td_s = element.find_all('td')
             row = [i.text for i in td_s]
             lift_rows.append(row)
 
         return lift_rows
+
+    # def get_last_table(self):
+    #     raise NotImplementedError
 
     def clean_lr_context(self):
         """
@@ -141,11 +148,6 @@ class Tabler(Parser):
         return '{}'.format(self.create_df())
 
     __repr__ = __str__
-
-
-# def call(url, write=False):
-    # inst = Tabler(url='https://www.reformagkh.ru/myhouse/profile/view/7628463/', write=write)
-    # print(inst)
 
 inst = Tabler(url='https://www.reformagkh.ru/myhouse/profile/view/7628463/', write=True)
 print(inst)

@@ -2,5 +2,4 @@
 # -*- coding: utf-8 -*-
 # author: Alexey Koshevoy
 
-import unittest
-
+from myhouse.my_house import Tabler as get_table
