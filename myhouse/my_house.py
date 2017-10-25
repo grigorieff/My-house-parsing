@@ -148,6 +148,6 @@ class Tabler(Parser):
         return '{}'.format(self.create_df())
 
     __repr__ = __str__
-
-inst = Tabler(url='https://www.reformagkh.ru/myhouse/profile/view/7628463/', write=True)
-print(inst)
+#
+# inst = Tabler(url='https://www.reformagkh.ru/myhouse/profile/view/7628463/', write=True)
+# print(inst)
