@@ -71,9 +71,6 @@ class Parser:
 
         return lift_rows
 
-    # def get_last_table(self):
-    #     raise NotImplementedError
-
     def clean_lr_context(self):
         """
         clean lr context from useless shit

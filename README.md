@@ -127,5 +127,5 @@ And you get this:
 If you want to write it to some tables, use the optional argument ``Write``:
 
 ```python
-print(get_table(url='https://www.reformagkh.ru/myhouse/profile/view/7561322', write=True))
+get_table(url='https://www.reformagkh.ru/myhouse/profile/view/7561322', write=True)
 ```
