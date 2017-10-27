@@ -20,8 +20,7 @@ class Soup:
 
     def check_url(self):
         """
-        check if the given url is from www.reformagkh.ru
-        !!!add if something with connection!!!
+        Check if the given url is from www.reformagkh.ru
         """
 
         base = 'https://www.reformagkh.ru/myhouse/profile/view/'
@@ -31,7 +30,7 @@ class Soup:
 
     def get_soup(self):
         """
-        get the soup variable for parsing the passport of a   certain house.
+        Get the soup variable for parsing the passport of a certain house
         """
         page = get(self.url)
         if page.status_code == 200:
@@ -49,7 +48,7 @@ class AllTables(Soup):
 
     def get_table(self):
         """
-        get passport tables
+        Get passport tables
         """
         table_big = self.soup.findAll(class_='subtab')
 
@@ -64,7 +63,7 @@ class FirstTwoTables(AllTables):
 
     def get_lr_context(self):
         """
-        get all context and 4 and 5, which are tables
+        Get tables 1 and 2
         """
         all_list = []
 
@@ -76,7 +75,7 @@ class FirstTwoTables(AllTables):
 
     def clean_lr_context(self):
         """
-        clean lr context from useless shit
+        Clean left and right sides from junk
         """
 
         clean_all_list = []
@@ -95,7 +94,7 @@ class FirstTwoTables(AllTables):
 
     def create_lr_lists(self):
         """
-        create left and right lists
+        Create left and right lists
         """
         results = self.clean_lr_context()
 
@@ -116,11 +115,11 @@ class LiftTable(AllTables):
 
     def get_lift_rows(self):
         """
-        Here I get the data from table 4
+        Get data from table 4, which contains data about lifts
         """
         lift_rows = []
 
-        for element in self.big_table[3].find_all('tr'):  # parse the 4-th table
+        for element in self.big_table[3].find_all('tr'):
             td_s = element.find_all('td')
             row = [i.text for i in td_s]
             lift_rows.append(row)
@@ -154,7 +153,7 @@ class PassportTables(LiftTable, FirstTwoTables):
 
     def write_file(self):
         """
-        If write is True write to file
+        If write is True write to file with certain name
         """
         rl_df, lift_df = self.create_df()
 

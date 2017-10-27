@@ -4,20 +4,18 @@
 
 import unittest
 import myhouse.my_house as my_house
+from myhouse.my_house import UrlError
 from unittest import mock
 
 
-class TestParserErrors(unittest.TestCase):
+class Exceptions(unittest.TestCase):
 
     def test_check_url(self):
-        with self.assertRaises(ValueError) as context:
-            my_house.Tabler(url='dhfdfhfdhfd')
+        with self.assertRaises(UrlError) as context:
+            my_house.Soup(url='dhfdfhfdhfd')
 
     def test_validity(self):
         with self.assertRaises(ConnectionError) as context:
-            my_house.Tabler(url='https://www.reformagkh.ru/myhouse/profile/view/7fddfdfdf463/')
+            my_house.Soup(url='https://www.reformagkh.ru/myhouse/profile/view/7fddfdfdf463/').get_soup()
 
 
-# class TestTablerErrors(unittest.TestCase):
-#
-#     def
