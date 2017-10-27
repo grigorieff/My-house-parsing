@@ -124,7 +124,7 @@ And you get this:
 14                       7  Пассажирский                    1988)
 ```
 
-If you want to write it to some tables, use the optional argument ``Write``:
+If you want to write it to .csv, use the optional argument ``Write``:
 
 ```python
 get_table(url='https://www.reformagkh.ru/myhouse/profile/view/7561322', write=True)

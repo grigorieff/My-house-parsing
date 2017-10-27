@@ -5,14 +5,18 @@
 from requests import get
 from bs4 import BeautifulSoup
 import pandas as pd
+import re
 
 
-class Parser:
+class UrlError(Exception):
+    pass
+
+
+class Soup:
 
     def __init__(self, url):
         self.url = url
         self.check_url()
-        self.big_table = self.get_table()
 
     def check_url(self):
         """
@@ -23,11 +27,11 @@ class Parser:
         base = 'https://www.reformagkh.ru/myhouse/profile/view/'
 
         if base not in self.url:
-            raise ValueError('It is not an www.reformagkh.ru link. Please try the correct link.')
+            raise UrlError('It is not an www.reformagkh.ru link. Please try the correct link.')
 
     def get_soup(self):
         """
-        get the soup variable for parsing the passport of a certain house.
+        get the soup variable for parsing the passport of a   certain house.
         """
         page = get(self.url)
         if page.status_code == 200:
@@ -36,15 +40,27 @@ class Parser:
         else:
             raise ConnectionError('The page is not disponible.')
 
+
+class AllTables(Soup):
+
+    def __init__(self, url):
+        super().__init__(url)
+        self.soup = self.get_soup()
+
     def get_table(self):
         """
         get passport tables
         """
-
-        soup = self.get_soup()
-        table_big = soup.findAll(class_='subtab')
+        table_big = self.soup.findAll(class_='subtab')
 
         return table_big
+
+
+class FirstTwoTables(AllTables):
+
+    def __init__(self, url):
+        super().__init__(url)
+        self.big_table = self.get_table()
 
     def get_lr_context(self):
         """
@@ -57,19 +73,6 @@ class Parser:
                 all_list.append(all_element.text)
 
         return all_list
-
-    def get_lift_rows(self):
-        """
-        Here I get the data from table 4
-        """
-        lift_rows = []
-
-        for element in self.big_table[3].find_all('tr'):  # parse the 4-th table
-            td_s = element.find_all('td')
-            row = [i.text for i in td_s]
-            lift_rows.append(row)
-
-        return lift_rows
 
     def clean_lr_context(self):
         """
@@ -90,19 +93,11 @@ class Parser:
 
         return clean_all_list
 
-
-class Tabler(Parser):
-
-    def __init__(self, url, write=False):
-        Parser.__init__(self, url)
-        self.write = write
-        self.write_file()
-
     def create_lr_lists(self):
         """
         create left and right lists
         """
-        results = Parser.clean_lr_context(self)
+        results = self.clean_lr_context()
 
         if len(results) % 2 == 0:
             left_list = results[1::2]
@@ -112,9 +107,37 @@ class Tabler(Parser):
         else:
             raise ArithmeticError('List is not odd, something went wrong.')
 
+
+class LiftTable(AllTables):
+
+    def __init__(self, url):
+        super().__init__(url)
+        self.big_table = self.get_table()
+
+    def get_lift_rows(self):
+        """
+        Here I get the data from table 4
+        """
+        lift_rows = []
+
+        for element in self.big_table[3].find_all('tr'):  # parse the 4-th table
+            td_s = element.find_all('td')
+            row = [i.text for i in td_s]
+            lift_rows.append(row)
+
+        return lift_rows
+
+
+class PassportTables(LiftTable, FirstTwoTables):
+
+    def __init__(self, url, write=False):
+        super().__init__(url)
+        self.write = write
+        self.write_file()
+
     def create_df(self):
         """
-        create pandas dataframe
+        Create pandas dataframe
         """
         right_list, left_list = self.create_lr_lists()
 
@@ -131,20 +154,19 @@ class Tabler(Parser):
 
     def write_file(self):
         """
-        if write is True write to file
+        If write is True write to file
         """
         rl_df, lift_df = self.create_df()
 
+        number = re.findall('\d+', self.url)[0]
+
         if self.write is True:
-            with open('house123.csv', 'w', encoding='utf-8-sig') as file:
+            with open('house_{}.csv'.format(number), 'w', encoding='utf-8-sig') as file:
                 rl_df.to_csv(file, sep=';')
-            with open('house4.csv', 'w', encoding='utf-8-sig') as file2:
+            with open('house_lifts_{}.csv'.format(number), 'w', encoding='utf-8-sig') as file2:
                 lift_df.to_csv(file2, sep=';')
 
     def __str__(self):
         return '{}'.format(self.create_df())
 
     __repr__ = __str__
-#
-# inst = Tabler(url='https://www.reformagkh.ru/myhouse/profile/view/7628463/', write=True)
-# print(inst)
