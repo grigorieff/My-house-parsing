@@ -5,7 +5,7 @@
 import unittest
 import myhouse.my_house as my_house
 from myhouse.my_house import UrlError
-from unittest import mock
+# from unittest import mock
 
 
 class Exceptions(unittest.TestCase):
@@ -16,6 +16,5 @@ class Exceptions(unittest.TestCase):
 
     def test_validity(self):
         with self.assertRaises(ConnectionError) as context:
-            my_house.Soup(url='https://www.reformagkh.ru/myhouse/profile/view/7fddfdfdf463/').get_soup()
-
-
+            my_house.Soup(url='https://www.reformagkh.ru/m'
+                              'yhouse/profile/view/7fddfdfdf463/').get_soup()

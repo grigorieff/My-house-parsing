@@ -26,7 +26,8 @@ class Soup:
         base = 'https://www.reformagkh.ru/myhouse/profile/view/'
 
         if base not in self.url:
-            raise UrlError('It is not an www.reformagkh.ru link. Please try the correct link.')
+            raise UrlError('It is not an www.reformagkh.ru link. '
+                           'Please try the correct link.')
 
     def get_soup(self):
         """
@@ -68,7 +69,8 @@ class FirstTwoTables(AllTables):
         all_list = []
 
         for element in self.big_table[:3]:
-            for all_element in element.select('.col_list > tbody > tr > td > span'):
+            for all_element in element.\
+                    select('.col_list > tbody > tr > td > span'):
                 all_list.append(all_element.text)
 
         return all_list
@@ -143,10 +145,14 @@ class PassportTables(LiftTable, FirstTwoTables):
         lift_rows = self.get_lift_rows()
 
         rl_dict = {"right": right_list, "left": left_list}
-        rl_df = pd.DataFrame(rl_dict, columns=["left", "right"])
+        rl_df = pd.DataFrame(rl_dict,
+                             columns=["left", "right"])
 
-        lift_df = pd.DataFrame(lift_rows[1:len(lift_rows)], columns=['Номер лифта','Номер подъезда',
-                                                                     'Тип лифта', 'Год ввода в эксплатацию'])\
+        lift_df = pd.DataFrame(lift_rows[1:len(lift_rows)],
+                               columns=['Номер лифта',
+                                        'Номер подъезда',
+                                        'Тип лифта',
+                                        'Год ввода в эксплатацию'])\
             .set_index('Номер лифта')
 
         return rl_df, lift_df
@@ -160,9 +166,11 @@ class PassportTables(LiftTable, FirstTwoTables):
         number = re.findall('\d+', self.url)[0]
 
         if self.write is True:
-            with open('house_{}.csv'.format(number), 'w', encoding='utf-8-sig') as file:
+            with open('house_{}.csv'.format(number), 'w',
+                      encoding='utf-8-sig') as file:
                 rl_df.to_csv(file, sep=';')
-            with open('house_lifts_{}.csv'.format(number), 'w', encoding='utf-8-sig') as file2:
+            with open('house_lifts_{}.csv'.format(number), 'w',
+                      encoding='utf-8-sig') as file2:
                 lift_df.to_csv(file2, sep=';')
 
     def __str__(self):
